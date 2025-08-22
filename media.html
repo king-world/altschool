@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>More about Ubong</title>
+</head>
+<body>
+    
+</body>
+</html>
+
+
+add_filter( 'timber_context', array( $this, 'add_mobile_menu_to_timber_context' ) ); // Add the mobile menu to the Timber context
+
+
+// Add the mobile menu to the Timber context
+public function add_mobile_menu_to_timber_context( $context ) {
+    $context['mobile_navigation'] = new \Timber\Menu('mobile_menu');
+    return $context;
+}
+
+
+
+
+//Register Mobile menu 
+function ies_register_menus() {
+    register_nav_menus([
+        'mobile_menu'  => __('Mobile Menu'),
+    ]);
+}
+add_action('after_setup_theme', 'ies_register_menus');
+
+
+
+
+<ul class="rnav-list" id="menu" role="tablist">
+    {% for key, nav in mobile_navigation.items %}
+        <li class="rnav-item{% if nav.active == true %} current{% endif %}{% if nav.children %} with-dropdown{% endif %}" {% if nav.children %}aria-haspopup="true"{% endif %} role="tab">
+            <a href="{{ nav.url }}" class="rnav-item-link">{{ nav.title }}</a>
+
+            {% if nav.children %}
+
+                <button class="rnav-arrow" aria-expanded="false">
+                    <svg aria-hidden="true" class="icon"><use xlink:href="{{ assets_dir }}/svg/icons.svg#arrow-down"/>Expand dropdown</svg>
+                </button>
+
+                <ul class="rnav-dropdown" aria-expanded="false" aria-label="{{ nav.title }} submenu" role="tablist">
+                    {% for item in nav.children %}
+                        <li class="rnav-item" role="tab">
+                            <a href="{{ item.url }}" class="rnav-item-link">{{ item.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+            {% endif %}
+
+        </li>
+    {% endfor %}
+
+    <ul class="rnav-secnav" role="tablist">
+        {% for secnav in secnav %}
+            <li class="rnav-secnav-item" role="tab">
+                <a href="{{ secnav.url }}" class="rnav-item-link">{{ secnav.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% for social in socials %}
+        <li class="rnav-item" role="tab">
+            <a href="{{ social.path }}" {% if social.target %}target="{{social.target}}"{% endif %} class="rnav-item-link"><svg aria-hidden="true" class="icon"><use xlink:href="{{ assets_dir }}/svg/icons.svg#{{ social.selector }}"/></svg> {{ social.selector|capitalize }}</a>
+        </li>
+    {% endfor %}
+</ul>
